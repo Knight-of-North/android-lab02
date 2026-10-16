@@ -1,0 +1,23 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# === 实验二补充规则：构建缓存 / IDE 配置 / 签名密钥（必须忽略） ===
+.kotlin/
+.idea/
+**/build/
+*.jks
+*.keystore
+
