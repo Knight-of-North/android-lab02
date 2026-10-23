@@ -2,6 +2,18 @@
 
 在实验二已能运行的 Kotlin Compose 工程上，把网络测试页整理成校园巡检页面：定位工程配置、修改应用名称、拆分源码文件、接入 OkHttp，并在设备上完成真实请求验证。
 
+## 源码结构
+
+三个文件同属 `com.example.firstkotlinapp` 包，职责分离：
+
+| 文件 | 职责 |
+| --- | --- |
+| `MainActivity.kt` | 系统入口。设置 Compose 内容，持有 `result` / `busy` 两个状态，把请求结果回写到界面 |
+| `InspectionScreen.kt` | 页面层。渲染巡检信息与两个请求按钮，纯展示，不碰网络；`remainingDevices` 负责数量计算 |
+| `InspectionNetwork.kt` | 网络层。持有超时 8 秒的 `OkHttpClient`，`fetch` 执行同步请求并返回「地址 + 状态码 + 正文前 800 字」 |
+
+跨文件调用约定：`fetch` 声明为顶层函数且不加 `private`，否则只能在本文件内使用（`private` 在顶层声明上是文件级可见性）。
+
 ## 实验目标
 
 - 按任务定位负责的文件，区分 SDK 路径、编译 API 级别、Gradle 版本与依赖坐标
