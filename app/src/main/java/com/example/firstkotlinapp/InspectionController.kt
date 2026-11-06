@@ -40,7 +40,12 @@ class InspectionController(private val scope: CoroutineScope) {
             try {
                 val tasks = loadInspectionTasks(room, scenario, requestKey)
                 // TODO 2：根据tasks是否为空设置EMPTY或SUCCESS，并将tasks放入state。
-                state = InspectionUiState(message = "TODO 2：请完成请求成功后的状态更新")
+                // 空数组是成功响应的一种结果，交给 EMPTY 分支提示，而不是当成网络失败。
+                state = if (tasks.isEmpty()) {
+                    InspectionUiState(LoadPhase.EMPTY)
+                } else {
+                    InspectionUiState(LoadPhase.SUCCESS, tasks)
+                }
                 Log.i("InspectionLab", "APPLY_RESULT $room ${tasks.size}")
             } catch (e: CancellationException) {
                 Log.i("InspectionLab", "REQUEST_CANCELLED $room")

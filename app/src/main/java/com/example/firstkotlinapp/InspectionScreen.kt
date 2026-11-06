@@ -82,7 +82,7 @@ fun InspectionScreen(controller: InspectionController, onBack: () -> Unit) {
                 }
                 LoadPhase.SUCCESS -> {
                     // TODO 3：从任务列表计算已完成数量，不能写死。
-                    val done = 0
+                    val done = state.tasks.count { it.status == "已完成" }
                     Text("${controller.room} · 共${state.tasks.size}项 · 待巡检${state.tasks.size - done}项 · 已完成${done}项",
                         modifier = Modifier.testTag("summary"), style = MaterialTheme.typography.titleSmall)
                     // TODO 6：增加“全部／仅看待巡检”按钮，更新pendingOnly。
@@ -90,7 +90,15 @@ fun InspectionScreen(controller: InspectionController, onBack: () -> Unit) {
                     // 此处起点直接使用全部数据；完成后A203仅待巡检为5项，A204为1项。
                     val visibleTasks = state.tasks
                     // TODO 4：使用LazyColumn、items和InspectionTaskCard展示visibleTasks。
-                    Text("TODO 4：请在此显示任务列表")
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(bottom = 12.dp)
+                    ) {
+                        items(visibleTasks, key = { it.id }) { task ->
+                            InspectionTaskCard(task)
+                        }
+                    }
                 }
             }
         }
@@ -102,7 +110,25 @@ fun InspectionTaskCard(task: InspectionTask) {
     Card(Modifier.fillMaxWidth().testTag("task_${task.id}")) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             // TODO 5：用Row组织名称和状态；名称用weight(1f)；下方显示编号和位置。
-            Text("待补全的任务卡片")
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                // weight(1f) 让名称占用剩余宽度并在不足时换行，状态始终保留自己的宽度不被挤出屏幕。
+                Text(
+                    task.deviceName,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    task.status,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (task.status == "已完成") MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Text(
+                "${task.id} · ${task.location}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

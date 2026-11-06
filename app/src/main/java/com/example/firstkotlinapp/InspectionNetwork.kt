@@ -35,8 +35,16 @@ suspend fun loadInspectionTasks(
     check(root.getString("room") == room) { "响应实验室与请求不一致" }
     val array = root.getJSONArray("tasks")
     // TODO 1：遍历array，将四个字段映射为InspectionTask，返回List。
-    // 起点返回空列表，仅保证骨架可运行，不代表解析已完成。
-    emptyList<InspectionTask>()
+    // 字段缺失时 getString 抛 JSONException，由 Controller 的 catch 转入 ERROR，不用默认值掩盖错误。
+    List(array.length()) { index ->
+        val item = array.getJSONObject(index)
+        InspectionTask(
+            id = item.getString("id"),
+            deviceName = item.getString("deviceName"),
+            location = item.getString("location"),
+            status = item.getString("status")
+        )
+    }
 }
 
 // 教师提供的桥接代码：取消协程时，同时取消OkHttp Call。

@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Android 16 起对"访问本机/局域网地址"单独管控：访问模拟器宿主 10.0.2.2 需要该运行时权限，
+         否则 TCP 连接会被静默丢弃，表现为 connectTimeout(5s) 超时。 -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
 
     <application
         android:allowBackup="true"
