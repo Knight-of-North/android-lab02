@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
-// 教师参考标识；学生须修改三个常量，验收码由教师当堂公布。
-private const val INSPECTOR_NAME = "教师演示"
-private const val STUDENT_SUFFIX = "DEMO"
-private const val CHECK_CODE = "示例"
+// 个人标识：姓名、学号后四位、当堂验收码。三个值只在本机显示，不提交到接口。
+private const val INSPECTOR_NAME = "舒飞"
+private const val STUDENT_SUFFIX = "5060"
+private const val CHECK_CODE = "1106"
 
 @Composable
 fun InspectionHome(onEnter: () -> Unit) {
@@ -87,8 +87,27 @@ fun InspectionScreen(controller: InspectionController, onBack: () -> Unit) {
                         modifier = Modifier.testTag("summary"), style = MaterialTheme.typography.titleSmall)
                     // TODO 6：增加“全部／仅看待巡检”按钮，更新pendingOnly。
                     // 根据pendingOnly筛选state.tasks，计算visibleTasks，并显示当前显示数量。
-                    // 此处起点直接使用全部数据；完成后A203仅待巡检为5项，A204为1项。
-                    val visibleTasks = state.tasks
+                    // 筛选只改变展示列表，顶部统计仍基于完整state.tasks；切换选项不重新请求网络。
+                    val visibleTasks = if (pendingOnly) state.tasks.filter { it.status == "待巡检" } else state.tasks
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FilterChip(
+                            selected = !pendingOnly,
+                            onClick = { pendingOnly = false },
+                            label = { Text("全部") },
+                            modifier = Modifier.testTag("filter_all")
+                        )
+                        FilterChip(
+                            selected = pendingOnly,
+                            onClick = { pendingOnly = true },
+                            label = { Text("仅看待巡检") },
+                            modifier = Modifier.testTag("filter_pending")
+                        )
+                    }
+                    Text(
+                        "当前显示 ${visibleTasks.size} 项",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.testTag("visibleCount")
+                    )
                     // TODO 4：使用LazyColumn、items和InspectionTaskCard展示visibleTasks。
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth().weight(1f),
