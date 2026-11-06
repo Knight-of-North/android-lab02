@@ -2,30 +2,38 @@ package com.example.firstkotlinapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
+import androidx.core.view.WindowCompat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
         setContent {
-            MaterialTheme {
-                var result by remember { mutableStateOf("等待请求") }
-                var busy by remember { mutableStateOf(false) }
-
-                InspectionScreen("舒飞", "A203", 10, 3, result, busy) { room ->
-                    busy = true
-                    result = "请求中：$room"
-                    Thread {
-                        val text = fetch("https://httpbin.org/get?room=$room")
-                        runOnUiThread {
-                            result = text
-                            busy = false
-                        }
-                    }.start()
-                }
+            MaterialTheme(colorScheme = lightColorScheme(primary = Color(0xFF245B84))) {
+                InspectionApp()
             }
         }
+    }
+}
+
+@Composable
+fun InspectionApp() {
+    var inTaskPage by remember { mutableStateOf(false) }
+    if (inTaskPage) {
+        val scope = rememberCoroutineScope()
+        val controller = remember(scope) { InspectionController(scope) }
+        BackHandler { inTaskPage = false }
+        InspectionScreen(controller, onBack = { inTaskPage = false })
+    } else {
+        InspectionHome(onEnter = { inTaskPage = true })
     }
 }

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 网络安全配置：仅对测试域名 httpbin.org 放行 HTTP 明文（测试③④阶段） -->
+<!-- 网络安全配置：默认禁止明文 HTTP，仅对允许的主机放行。
+     10.0.2.2 是 Android 官方模拟器访问宿主机回环地址的固定别名（实验四教学接口）。
+     httpbin.org 为实验三回显测试保留。 -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="false" />
     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">httpbin.org</domain>
     </domain-config>
 </network-security-config>
